@@ -8,14 +8,43 @@ export type TaskProps = Readonly<{
 	completed: boolean
 }>
 
+const defaultFormData = {
+  title: ''
+}
+
 function App() {
+  const [ formData, setFormData ] = useState(defaultFormData)
+
   const [ tasks, setTasks ] = useState<TaskProps[]>([
     {id: '1', title: 'Feed cat', completed: false},
     {id: '2', title: 'Play D&D', completed: true},
   ])
+  const { title } = formData
 
 
-const handleToggleTask = (id: string) => {
+
+  const handleFormChange = (evt: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData((prevState) => ({
+      ...prevState,
+      [evt.target.id]: evt.target.value
+    }))
+  }
+
+  const handleNewTask = (evt: React.FormEvent<HTMLFormElement>) => {
+    evt.preventDefault()
+
+    setFormData(defaultFormData)
+
+    setTasks(prevState => {
+      return [
+        ...prevState, 
+        { id: (tasks.length + 1).toString(), title: formData.title, completed: false }
+      ]
+    })
+
+  }
+
+  const handleToggleTask = (id: string) => {
     const newTasks = tasks.map(task => {
       if(task.id === id) {
         return {
@@ -37,16 +66,18 @@ const handleToggleTask = (id: string) => {
       </header>
 
       <main>
-        <form>
+        <form onSubmit={handleNewTask}>
           <input
             type="text"
             name="title"
             id="title"
+            onChange={handleFormChange}
+            value={title}
             placeholder="Task name"
             autoComplete='off'
             required
           />
-          <button>Add</button>
+          <button type="submit">Add</button>
         </form>
 
           <section>
