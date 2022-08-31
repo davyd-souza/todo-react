@@ -8,6 +8,10 @@ export type TaskProps = Readonly<{
 	completed: boolean
 }>
 
+type TaskCompletedProps = TaskProps & Readonly<{
+	completed: true
+}>
+
 const defaultFormData = {
   title: ''
 }
@@ -59,6 +63,15 @@ function App() {
     setTasks(newTasks)
   }
 
+  const handleCompleteAll = () => {
+    const newTasks = tasks.map(task => completeAll(task))
+    setTasks(newTasks)
+  }
+
+  const completeAll = (task: TaskProps): TaskCompletedProps => {
+    return { ...task, completed: true}
+  }
+
   return (
     <div className="App">
       <header>
@@ -88,7 +101,7 @@ function App() {
                     <input 
                       type="checkbox" 
                       id={task.id} 
-                      defaultChecked={task.completed}
+                      checked={task.completed}
                       onClick={() => handleToggleTask(task.id)}
                     />
                     <label 
@@ -101,6 +114,7 @@ function App() {
                 )
               })
             }
+            <button onClick={handleCompleteAll}>Mark all complete</button>
           </section>
       </main>
 
