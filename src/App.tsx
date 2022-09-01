@@ -1,17 +1,11 @@
 // DEPENDENCY
 import { useState } from 'react'
 
-// UTIL
-type TaskProps = Readonly<{
-	id: string
-	title: string
-	completed: boolean
-  label?: string
-}>
+// COMPONENT
+import { TodoList } from './components/TodoList'
 
-type TaskCompletedProps = TaskProps & Readonly<{
-	completed: true
-}>
+// UTIL
+import { TodoProps } from './interfaces'
 
 const defaultFormData = {
   title: '',
@@ -19,8 +13,10 @@ const defaultFormData = {
 }
 
 function App() {
+
   const [ formData, setFormData ] = useState(defaultFormData)
-  const [ tasks, setTasks ] = useState<TaskProps[]>([
+
+  const [ todos, setTodos ] = useState<TodoProps[]>([
     { id: '1', title: 'Feed cat', completed: false, label: 'home' },
     { id: '2', title: 'Play D&D', completed: false, label: 'game' },
     { id: '3', title: 'Finish card', completed: true, label: 'work' },
@@ -31,8 +27,6 @@ function App() {
   const labelList = ['home', 'work', 'study', 'supermarket']
   const { title, label } = formData
 
-
-
   const handleFormChange = (evt: React.ChangeEvent<HTMLInputElement>) => {
     setFormData((prevState) => ({
       ...prevState,
@@ -40,16 +34,16 @@ function App() {
     }))
   }
 
-  const handleNewTask = (evt: React.FormEvent<HTMLFormElement>) => {
+  const handleNewTodo = (evt: React.FormEvent<HTMLFormElement>) => {
     evt.preventDefault()
 
     setFormData(defaultFormData)
 
-    setTasks(prevState => {
+    setTodos(prevState => {
       return [
         ...prevState, 
         { 
-          id: (tasks.length + 1).toString(), 
+          id: (todos.length + 1).toString(), 
           title: formData.title,
           completed: false,
           label: formData.label
@@ -59,31 +53,20 @@ function App() {
 
   }
 
-  const handleToggleTask = (id: string) => {
-    const newTasks = tasks.map(task => {
-      if(task.id === id) {
-        return {
-          ...task,
-          completed: !task.completed
-        }
-      }
+  const completeAll = (todos: TodoProps[]) => {
+    const newTodos = todos.map(todo =>  {
+			return { ...todo, completed: true }
+		})
+		setTodos(newTodos)
+  }
 
-      return task
+  const toggleTodo = (id: string) => {
+    const newTodos = todos.map(todo => {
+      if(todo.id === id) return { ...todo, completed: !todo.completed }
+      return todo
     })
-    
-    setTasks(newTasks)
+    setTodos(newTodos)
   }
-
-  const handleCompleteAll = () => {
-    const newTasks = tasks.map(task => completeAll(task))
-    setTasks(newTasks)
-  }
-
-
-  const completeAll = (task: TaskProps): TaskCompletedProps => {
-    return { ...task, completed: true}
-  }
-
 
   return (
     <div className="App">
@@ -91,8 +74,8 @@ function App() {
         <h1>TODO</h1>
       </header>
 
-      <main>
-        <form onSubmit={handleNewTask}>
+      <section>
+        <form onSubmit={handleNewTodo}>
 
           <input
             type="text"
@@ -123,35 +106,13 @@ function App() {
 
           <button type="submit">Add</button>
         </form>
+      </section>
 
-          <section>
-            <ul>
-              {
-                tasks.map(task => {
-                  return (
-                    <li key={task.id}>
-                      <input 
-                        type="checkbox" 
-                        id={task.id} 
-                        checked={task.completed}
-                        onChange={() => handleToggleTask(task.id)}
-                      />
-                      <label htmlFor={task.id} style={{textDecoration: task.completed ? 'line-through' : 'none' }}>
-                        {task.title}
-                      </label>
-
-                      <label htmlFor={task.id}>
-                        { task.label && ` @${task.label}` }
-                      </label>
-                    </li>
-                  )
-                })
-              }
-            </ul>
-
-            <button onClick={handleCompleteAll}>Mark all complete</button>
-          </section>
-      </main>
+        <TodoList 
+          todos={todos}
+          completeAll={completeAll}
+          toggleTodo={toggleTodo}
+        />
 
       <footer>
         Made with 💛 by <a>Davyd Souza</a>
