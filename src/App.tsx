@@ -2,10 +2,11 @@
 import { useState } from 'react'
 
 // UTIL
-export type TaskProps = Readonly<{
+type TaskProps = Readonly<{
 	id: string
 	title: string
 	completed: boolean
+  label?: string
 }>
 
 type TaskCompletedProps = TaskProps & Readonly<{
@@ -13,17 +14,22 @@ type TaskCompletedProps = TaskProps & Readonly<{
 }>
 
 const defaultFormData = {
-  title: ''
+  title: '',
+  label: ''
 }
 
 function App() {
   const [ formData, setFormData ] = useState(defaultFormData)
-
   const [ tasks, setTasks ] = useState<TaskProps[]>([
-    {id: '1', title: 'Feed cat', completed: false},
-    {id: '2', title: 'Play D&D', completed: true},
+    { id: '1', title: 'Feed cat', completed: false, label: 'home' },
+    { id: '2', title: 'Play D&D', completed: false, label: 'game' },
+    { id: '3', title: 'Finish card', completed: true, label: 'work' },
+    { id: '4', title: 'Learn pure function', completed: false, label: 'study' },
+    { id: '5', title: 'Workout', completed: false},
   ])
-  const { title } = formData
+
+  const labelList = ['home', 'work', 'study', 'supermarket']
+  const { title, label } = formData
 
 
 
@@ -42,7 +48,12 @@ function App() {
     setTasks(prevState => {
       return [
         ...prevState, 
-        { id: (tasks.length + 1).toString(), title: formData.title, completed: false }
+        { 
+          id: (tasks.length + 1).toString(), 
+          title: formData.title,
+          completed: false,
+          label: formData.label
+        }
       ]
     })
 
@@ -68,9 +79,11 @@ function App() {
     setTasks(newTasks)
   }
 
+
   const completeAll = (task: TaskProps): TaskCompletedProps => {
     return { ...task, completed: true}
   }
+
 
   return (
     <div className="App">
@@ -80,6 +93,7 @@ function App() {
 
       <main>
         <form onSubmit={handleNewTask}>
+
           <input
             type="text"
             name="title"
@@ -87,33 +101,54 @@ function App() {
             onChange={handleFormChange}
             value={title}
             placeholder="Task name"
-            autoComplete='off'
+            autoComplete="off"
             required
           />
+
+          <input
+            type="text"
+            name="label"
+            id="label"
+            onChange={handleFormChange}
+            value={label}
+            list="label-list"
+            placeholder="Add a label"
+          />
+
+          <datalist id="label-list">
+            {
+              labelList.map(label => <option key={label} value={label}>{`@${label}`}</option>)
+            }
+          </datalist>
+
           <button type="submit">Add</button>
         </form>
 
           <section>
-            {
-              tasks.map(task => {
-                return (
-                  <div key={task.id}>
-                    <input 
-                      type="checkbox" 
-                      id={task.id} 
-                      checked={task.completed}
-                      onClick={() => handleToggleTask(task.id)}
-                    />
-                    <label 
-                      htmlFor={task.id}
-                      style={{textDecoration: task.completed ? 'line-through' : 'none' }}
-                    >
-                      {task.title}
+            <ul>
+              {
+                tasks.map(task => {
+                  return (
+                    <li key={task.id}>
+                      <input 
+                        type="checkbox" 
+                        id={task.id} 
+                        checked={task.completed}
+                        onChange={() => handleToggleTask(task.id)}
+                      />
+                      <label htmlFor={task.id} style={{textDecoration: task.completed ? 'line-through' : 'none' }}>
+                        {task.title}
                       </label>
-                  </div>
-                )
-              })
-            }
+
+                      <label htmlFor={task.id}>
+                        { task.label && ` @${task.label}` }
+                      </label>
+                    </li>
+                  )
+                })
+              }
+            </ul>
+
             <button onClick={handleCompleteAll}>Mark all complete</button>
           </section>
       </main>
