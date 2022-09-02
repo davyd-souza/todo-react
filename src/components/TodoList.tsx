@@ -15,7 +15,7 @@ export function TodoList({ todos, completeAll, toggleTodo }: TodoListProps) {
 	const handleCompleteAll = () => completeAll(todos)
 
 	return (
-		<section>
+		<>
 			<ul>
 				{
 					todos.map( ({id, title, completed, label}) => 
@@ -31,6 +31,7 @@ export function TodoList({ todos, completeAll, toggleTodo }: TodoListProps) {
 				}
 			</ul>
 			<button onClick={handleCompleteAll}>Mark all complete</button>
-		</section>
+		</>
+
 	)
 }

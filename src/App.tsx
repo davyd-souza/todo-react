@@ -53,12 +53,14 @@ function App() {
       <section>
         <TodoAdd addTodo={addTodo} />
       </section>
-
-      <TodoList 
-        todos={todos}
-        completeAll={completeAll}
-        toggleTodo={toggleTodo}
-      />
+      
+      <section>
+        <TodoList 
+          todos={todos}
+          completeAll={completeAll}
+          toggleTodo={toggleTodo}
+        />
+      </section>
 
       <footer>
         Made with 💛 by <a>Davyd Souza</a>
